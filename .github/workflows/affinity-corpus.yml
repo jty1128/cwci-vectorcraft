@@ -1,41 +1,46 @@
 name: Affinity 3 corpus
-
-on:
-  push:
-    branches: [main]
-    paths: ["crates/**", "xtask/**", "Cargo.toml", "Cargo.lock", ".github/workflows/affinity-corpus.yml"]
+'on':
   pull_request:
-    paths: ["crates/**", "xtask/**", "Cargo.toml", "Cargo.lock", ".github/workflows/affinity-corpus.yml"]
-  workflow_dispatch:
-
+    paths:
+    - crates/**
+    - xtask/**
+    - Cargo.toml
+    - Cargo.lock
+    - .github/workflows/affinity-corpus.yml
+    branches:
+    - cwci-ff26386f38b554c8456e-base
 permissions:
   contents: read
-
 concurrency:
   group: affinity-corpus-${{ github.ref }}
-  cancel-in-progress: true
-
+  cancel-in-progress: 'true'
 jobs:
   affinity3:
-    # Tracks @main so suite-wide CI fixes reach every app without a PR in each repository.
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/craft-common-actions/.github/workflows/gate.yml@8de85f814fa8b61d63abc062f2c9bc866158a217
     with:
-      timeout-minutes: 30
-      toolchain: "1.95"
-      # As before: no craft-fonts, apt packages, wasm target or nextest.
-      craft-fonts-ref: ""
-      targets: ""
-      tools: ""
-      dev-debug: "0"
-      env: |
-        AFFINITY_CORPUS_REQUIRED=1
+      timeout-minutes: '30'
+      toolchain: '1.95'
+      craft-fonts-ref: ''
+      targets: ''
+      tools: ''
+      dev-debug: '0'
+      env: 'AFFINITY_CORPUS_REQUIRED=1
+
         CARGO_PROFILE_TEST_DEBUG=0
-      # Its own cache, apart from ci.yml's gate.
+
+        '
       cache-version: v1-affinity
-      command: |
-        # Pinned and checksum-verified corpus.
+      command: '# Pinned and checksum-verified corpus.
+
         cargo xtask corpus --affinity
+
         # Parse every file and freeze actual Affinity 3 feature retention.
+
         cargo test -p vectorcraft-affinity --all-features -- --nocapture
+
         # Every artboard, native save, SVG, PDF and PSD export.
-        cargo test -p vectorcraft-engine --test affinity_artboards --test affinity_text --test affinity_corpus -- --nocapture
+
+        cargo test -p vectorcraft-engine --test affinity_artboards --test affinity_text
+        --test affinity_corpus -- --nocapture
+
+        '
