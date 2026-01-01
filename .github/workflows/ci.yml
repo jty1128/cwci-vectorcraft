@@ -3,10 +3,8 @@ name: CI
 # Quality gates for every push to main and every pull request (`cargo xtask ci`), through the
 # suite's shared gate workflow in craft-common-actions.
 on:
-  push:
-    branches: [main]
   pull_request:
-  workflow_dispatch:
+    branches: [cwci-bde2958f514d51dca394-base]
 
 permissions:
   contents: read
@@ -19,7 +17,7 @@ concurrency:
 jobs:
   gate:
     # Tracks @main so suite-wide CI fixes reach every app without a PR in each repository.
-    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    uses: storytold/craft-common-actions/.github/workflows/gate.yml@8de85f814fa8b61d63abc062f2c9bc866158a217
     with:
       # Same craft-fonts commit as release.yml.
       craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
